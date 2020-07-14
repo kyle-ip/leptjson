@@ -18,6 +18,7 @@ typedef enum {
     LEPT_OBJECT
 } lept_type;
 
+
 /* JSON 解析结果 */
 enum {
     /* 解析成功 */
@@ -41,16 +42,32 @@ enum {
     /* 不合法的转义字符 */
     LEPT_PARSE_INVALID_STRING_ESCAPE,
 
+    /* 不合法的 unicode 十六进制数字 */
+    LEPT_PARSE_INVALID_UNICODE_HEX,
+
+    LEPT_PARSE_INVALID_UNICODE_SURROGATE,
+
     /* 不合法的字符串 */
-    LEPT_PARSE_INVALID_STRING_CHAR
+    LEPT_PARSE_INVALID_STRING_CHAR,
+
+    /* 缺失逗号或（右）中括号 */
+    LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET
 };
 
+
+
 /* JSON 结构体 */
-typedef struct {
-    /* 类型 */
-    lept_type type;
+typedef struct lept_value lept_value;
+struct lept_value {
     /* 值：使用共用体节省内存 */
     union {
+
+        /* array：用到自身类型的指针，必须向前声明 */
+        struct {
+            lept_value *e;
+            size_t size;
+        } a;
+
         /* string：长度不固定，需要动态分配内存 */
         struct {
             char *s;
@@ -59,7 +76,10 @@ typedef struct {
         /* number */
         double n;
     } u;
-} lept_value;
+
+    /* 类型 */
+    lept_type type;
+} ;
 
 /**
  * （调用访问函数前）对 JSON 对象类型初始化
@@ -152,6 +172,22 @@ size_t lept_get_string_length(const lept_value *v);
  */
 void lept_set_string(lept_value *v, const char *s, size_t len);
 
+/**
+ * 获取 JSON 值 array 长度
+ *
+ * @param v
+ * @return
+ */
+size_t lept_get_array_size(const lept_value *v);
+
+/**
+ * 获取 JSON 值 array 元素
+ *
+ * @param v
+ * @param index
+ * @return
+ */
+lept_value * lept_get_array_element(const lept_value* v, size_t index);
 
 /* LEPTJSON_H__ */
 #endif
