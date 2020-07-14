@@ -1,5 +1,8 @@
 #ifndef LEPTJSON_H__
 #define LEPTJSON_H__
+
+#include <stddef.h> /* size_t */
+
 /* 项目名称_目录_文件名称_H__ */
 /* 项目名称_H__ */
 
@@ -29,8 +32,17 @@ enum {
     /* 过大的数值 */
     LEPT_PARSE_NUMBER_TOO_BIG,
 
+    /* 缺失引号 */
+    LEPT_PARSE_MISS_QUOTATION_MARK,
+
     /* 其他字面值 */
-    LEPT_PARSE_ROOT_NOT_SINGULAR
+    LEPT_PARSE_ROOT_NOT_SINGULAR,
+
+    /* 不合法的转义字符 */
+    LEPT_PARSE_INVALID_STRING_ESCAPE,
+
+    /* 不合法的字符串 */
+    LEPT_PARSE_INVALID_STRING_CHAR
 };
 
 /* JSON 结构体 */
@@ -82,7 +94,7 @@ lept_type lept_get_type(const lept_value *v);
  * @param v
  * @return
  */
-int lept_get_boolean(const lept_value* v);
+int lept_get_boolean(const lept_value *v);
 
 /**
  * 设置 JSON 值 boolean
@@ -90,7 +102,7 @@ int lept_get_boolean(const lept_value* v);
  * @param v
  * @param b
  */
-void lept_set_boolean(lept_value* v, int b);
+void lept_set_boolean(lept_value *v, int b);
 
 /**
  * 获取 JSON 值 number
@@ -106,7 +118,7 @@ double lept_get_number(const lept_value *v);
  * @param v
  * @param n
  */
-void lept_set_number(lept_value* v, double n);
+void lept_set_number(lept_value *v, double n);
 
 /**
  * 释放内存
@@ -121,7 +133,7 @@ void lept_free(lept_value *v);
  * @param v
  * @return
  */
-const char* lept_get_string(const lept_value* v);
+const char *lept_get_string(const lept_value *v);
 
 /**
  * 获取 JSON 值 string 长度
@@ -129,7 +141,7 @@ const char* lept_get_string(const lept_value* v);
  * @param v
  * @return
  */
-size_t lept_get_string_length(const lept_value* v);
+size_t lept_get_string_length(const lept_value *v);
 
 /**
  * 设置 JSON 值 string
@@ -138,7 +150,7 @@ size_t lept_get_string_length(const lept_value* v);
  * @param s
  * @param len
  */
-void lept_set_string(lept_value* v, const char* s, size_t len);
+void lept_set_string(lept_value *v, const char *s, size_t len);
 
 
 /* LEPTJSON_H__ */
