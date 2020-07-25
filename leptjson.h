@@ -57,15 +57,14 @@ enum {
 
     LEPT_PARSE_MISS_COLON,
 
-    LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET,
-
-    LEPT_PARSE_STRINGIFY_INIT_SIZE
+    LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET
 };
 
 #define LEPT_KEY_NOT_EXIST ((size_t) - 1)
 
 /* JSON 结构体 */
 typedef struct lept_value lept_value;
+
 typedef struct lept_member lept_member;
 
 struct lept_value {
@@ -111,8 +110,17 @@ struct lept_member {
  */
 #define lept_init(v) do { (v)->type = LEPT_NULL; } while(0)
 
+/**
+ *
+ */
 #define lept_set_null(v) lept_free(v);
 
+/**
+ *
+ * @param lhs
+ * @param rhs
+ * @return
+ */
 int lept_is_equal(const lept_value* lhs, const lept_value* rhs);
 
 /**
@@ -329,18 +337,59 @@ size_t lept_get_object_key_length(const lept_value *v, size_t index);
  */
 lept_value *lept_get_object_value(const lept_value *v, size_t index);
 
+/**
+ *
+ * @param v
+ * @param key
+ * @param klen
+ * @return
+ */
 size_t lept_find_object_index(const lept_value* v, const char* key, size_t klen);
 
+/**
+ *
+ * @param v
+ * @param key
+ * @param klen
+ * @return
+ */
 lept_value* lept_find_object_value(lept_value* v, const char* key, size_t klen);
 
+/**
+ *
+ * @param v
+ * @param key
+ * @param klen
+ * @return
+ */
 lept_value* lept_set_object_value(lept_value* v, const char* key, size_t klen);
 
+/**
+ *
+ * @param v
+ * @param index
+ */
 void lept_remove_object_value(lept_value* v, size_t index);
 
+/**
+ *
+ * @param dst
+ * @param src
+ */
 void lept_copy(lept_value* dst, const lept_value* src);
 
+/**
+ *
+ * @param dst
+ * @param src
+ */
 void lept_move(lept_value* dst, lept_value* src);
 
+/**
+ *
+ * @param lhs
+ * @param rhs
+ */
 void lept_swap(lept_value* lhs, lept_value* rhs);
 
 /* LEPTJSON_H__ */
