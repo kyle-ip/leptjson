@@ -51,21 +51,37 @@ enum {
     LEPT_PARSE_INVALID_STRING_CHAR,
 
     /* 缺失逗号或（右）中括号 */
-    LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET
+    LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET,
+
+    LEPT_PARSE_MISS_KEY,
+
+    LEPT_PARSE_MISS_COLON,
+
+    LEPT_PARSE_MISS_COMMA_OR_CURLY_BRACKET,
+
+    LEPT_PARSE_STRINGIFY_INIT_SIZE
 };
 
-
+#define LEPT_KEY_NOT_EXIST ((size_t) - 1)
 
 /* JSON 结构体 */
 typedef struct lept_value lept_value;
+typedef struct lept_member lept_member;
+
 struct lept_value {
     /* 值：使用共用体节省内存 */
     union {
 
+        /* object */
+        struct {
+            lept_member *m;
+            size_t size, capacity;
+        } o;
+
         /* array：用到自身类型的指针，必须向前声明 */
         struct {
             lept_value *e;
-            size_t size;
+            size_t size, capacity;
         } a;
 
         /* string：长度不固定，需要动态分配内存 */
@@ -73,13 +89,21 @@ struct lept_value {
             char *s;
             size_t len;
         } s;
+
         /* number */
         double n;
     } u;
 
     /* 类型 */
     lept_type type;
-} ;
+};
+
+/* JSON object 成员 */
+struct lept_member {
+    char *k;        /* 成员键以及键的长度 */
+    size_t klen;
+    lept_value v;   /* 成员值 */
+};
 
 /**
  * （调用访问函数前）对 JSON 对象类型初始化
@@ -88,6 +112,8 @@ struct lept_value {
 #define lept_init(v) do { (v)->type = LEPT_NULL; } while(0)
 
 #define lept_set_null(v) lept_free(v);
+
+int lept_is_equal(const lept_value* lhs, const lept_value* rhs);
 
 /**
  * 解析 JSON，一般用法：
@@ -99,6 +125,14 @@ struct lept_value {
  * @return
  */
 int lept_parse(lept_value *v, const char *json);
+
+/**
+ *
+ * @param v
+ * @param length
+ * @return
+ */
+char *lept_stringify(const lept_value *v, size_t *length);
 
 /**
  * 获取 JSON 类型（包括 null、true、false）
@@ -173,6 +207,13 @@ size_t lept_get_string_length(const lept_value *v);
 void lept_set_string(lept_value *v, const char *s, size_t len);
 
 /**
+ *
+ * @param v
+ * @param capacity
+ */
+void lept_set_array(lept_value* v, size_t capacity);
+
+/**
  * 获取 JSON 值 array 长度
  *
  * @param v
@@ -187,7 +228,120 @@ size_t lept_get_array_size(const lept_value *v);
  * @param index
  * @return
  */
-lept_value * lept_get_array_element(const lept_value* v, size_t index);
+lept_value *lept_get_array_element(const lept_value *v, size_t index);
+
+/**
+ *
+ * @param v
+ * @param capacity
+ */
+void lept_reserve_array(lept_value* v, size_t capacity);
+
+/**
+ *
+ * @param v
+ */
+void lept_shrink_array(lept_value* v);
+
+/**
+ *
+ * @param v
+ */
+void lept_clear_array(lept_value* v);
+
+/**
+ *
+ * @param v
+ * @param index
+ * @param count
+ */
+void lept_erase_array_element(lept_value* v, size_t index, size_t count);
+
+/**
+ *
+ * @param v
+ * @return
+ */
+size_t lept_get_array_capacity(const lept_value* v);
+
+/**
+ *
+ * @param v
+ * @param capacity
+ */
+void lept_set_object(lept_value* v, size_t capacity);
+
+/**
+ * 获取 JSON 值 object 长度
+ *
+ * @param v
+ * @return
+ */
+size_t lept_get_object_size(const lept_value *v);
+
+/**
+ *
+ * @param v
+ * @return
+ */
+size_t lept_get_object_capacity(const lept_value* v);
+
+/**
+ *
+ * @param v
+ * @param capacity
+ */
+void lept_reserve_object(lept_value* v, size_t capacity);
+
+/**
+ *
+ * @param v
+ */
+void lept_shrink_object(lept_value* v);
+
+/**
+ *
+ * @param v
+ */
+void lept_clear_object(lept_value* v);
+
+/**
+ * 获取 JSON 值 object 键
+ *
+ * @param v
+ * @return
+ */
+const char *lept_get_object_key(const lept_value *v, size_t index);
+
+/**
+ * 获取 JSON 值 object 键长度
+ *
+ * @param v
+ * @return
+ */
+size_t lept_get_object_key_length(const lept_value *v, size_t index);
+
+/**
+ * 获取 JSON 值 object 值
+ *
+ * @param v
+ * @return
+ */
+lept_value *lept_get_object_value(const lept_value *v, size_t index);
+
+size_t lept_find_object_index(const lept_value* v, const char* key, size_t klen);
+
+lept_value* lept_find_object_value(lept_value* v, const char* key, size_t klen);
+
+lept_value* lept_set_object_value(lept_value* v, const char* key, size_t klen);
+
+void lept_remove_object_value(lept_value* v, size_t index);
+
+void lept_copy(lept_value* dst, const lept_value* src);
+
+void lept_move(lept_value* dst, lept_value* src);
+
+void lept_swap(lept_value* lhs, lept_value* rhs);
 
 /* LEPTJSON_H__ */
 #endif
