@@ -585,7 +585,7 @@ static void test_copy_array() {
 
 static void test_copy() {
     test_copy_array();
-/*    test_copy_object();*/
+    test_copy_object();
 }
 
 static void test_move() {
@@ -630,8 +630,7 @@ int main() {
     test_parse();
     test_stringify();
     test_equal();
-/*    test_copy();
-    */
+/*    test_copy();*/
     test_move();
     test_swap();
     test_access();

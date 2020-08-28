@@ -814,10 +814,10 @@ char *lept_stringify(const lept_value *v, size_t *length) {
  */
 void lept_free(lept_value *v) {
     size_t i;
-/*    if (v == NULL) {
+    if (v == NULL) {
         return;
-    }*/
-    assert(v != NULL);
+    }
+/*    assert(v != NULL);*/
     switch (v->type) {
         case LEPT_STRING:
             free(v->u.s.s);
