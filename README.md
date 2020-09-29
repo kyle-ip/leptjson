@@ -4,7 +4,7 @@ json-tutorial by Milo Yip: https://github.com/miloyip/json-tutorial
 ## Run Test
 My dev environment
 - Ubuntu 18.04
-- cmake
+- CMake
 ```
 apt install cmake
 ```
